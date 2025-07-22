@@ -7,7 +7,7 @@ const socketIO = require('socket.io');
 
 // Route imports
 const authRoutes = require('./routes/auth');
-const tournamentRoutes = require('./routes/tournaments');
+const tournamentRoutes = require('./routes/Tournaments');
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
 const leaderboardRoutes = require('./routes/leaderboard');
@@ -15,6 +15,9 @@ const profileRoutes = require('./routes/profile');
 const matchRoutes = require('./routes/match');
 const friendRoutes = require('./routes/friend');
 const squadRoutes = require('./routes/squads');
+const Message = require('./models/Message');
+const messageRoutes = require('./routes/messages')
+const xpHistoryRoutes = require('./routes/matchxp');
 
 dotenv.config();
 
@@ -38,6 +41,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/match', matchRoutes);
 app.use('/api/friends', friendRoutes);
 app.use('/api/squads', squadRoutes);
+app.use('/api/messages', messageRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {

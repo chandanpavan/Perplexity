@@ -97,9 +97,11 @@ export default function Dashboard() {
   const [joinedTournaments, setJoinedTournaments] = useState([]);
   const [matchHistory, setMatchHistory] = useState([]);
   const [xp, setXp] = useState(0);
+  const [squad, setSquad] = useState(null);
 
   const email = localStorage.getItem('email');
   const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('user_id');
 
   const level = Math.floor(xp / 100);
   const progress = xp % 100;
@@ -111,13 +113,14 @@ export default function Dashboard() {
     return '🎮 Rookie';
   };
 
+  const isLeader = squad?.leader?._id === userId;
+
   useEffect(() => {
     if (!token || !email) {
       navigate('/login');
       return;
     }
 
-    // Fetch joined tournaments
     fetch(`http://localhost:5000/api/users/${email}/joined`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -125,7 +128,6 @@ export default function Dashboard() {
       .then((data) => setJoinedTournaments(data || []))
       .catch((err) => console.error('Joined tournaments error:', err));
 
-    // Fetch XP
     fetch(`http://localhost:5000/api/profile/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -135,14 +137,21 @@ export default function Dashboard() {
       })
       .catch((err) => console.error('XP fetch error:', err));
 
-    // Fetch match history
     fetch(`http://localhost:5000/api/match/history`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
       .then((data) => setMatchHistory(data || []))
       .catch((err) => console.error('Match history error:', err));
-  }, [email, token, navigate]);
+
+    fetch('http://localhost:5000/api/squads/my', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.message) setSquad(data);
+      });
+  }, [email, token, navigate, userId]);
 
   const handleLeave = async (tournamentId) => {
     try {
@@ -157,9 +166,7 @@ export default function Dashboard() {
       const data = await res.json();
       if (res.ok) {
         alert(data.message);
-        setJoinedTournaments((prev) =>
-          prev.filter((tournament) => tournament._id !== tournamentId)
-        );
+        setJoinedTournaments((prev) => prev.filter((t) => t._id !== tournamentId));
         setXp((prev) => Math.max(0, prev - 10));
       } else {
         alert(data.message || 'Could not leave the tournament.');
@@ -179,7 +186,7 @@ export default function Dashboard() {
     <div style={styles.container}>
       <h1 style={styles.heading}>Welcome, {email}</h1>
 
-      {/* XP Bar + Badge */}
+      {/* XP + Badge */}
       <div style={styles.xpBox}>
         <div style={styles.progressBarWrapper}>
           <div
@@ -195,6 +202,16 @@ export default function Dashboard() {
         <p style={styles.badge}>🏅 Badge: {getBadge(level)}</p>
       </div>
 
+      {/* Squad Info */}
+      {squad && (
+        <div style={styles.section}>
+          <h2 style={{ color: '#c6a1f9', marginBottom: '1rem' }}>🛡 Squad Info</h2>
+          <p><strong>Name:</strong> {squad.name}</p>
+          <p><strong>Role:</strong> {isLeader ? '👑 Leader' : '🎖 Member'}</p>
+          <p><strong>Members:</strong> {squad.members?.length || 1}</p>
+        </div>
+      )}
+
       {/* Joined Tournaments */}
       <div style={styles.section}>
         <h2 style={{ color: '#c6a1f9', marginBottom: '1rem' }}>🎮 Joined Tournaments</h2>
@@ -205,7 +222,7 @@ export default function Dashboard() {
             {joinedTournaments.map((tourney) => (
               <li key={tourney._id} style={styles.tournamentItem}>
                 <span style={styles.tournamentText}>
-                  {tourney.game} — {tourney.date} at {tourney.time} <br />
+                  {tourney.game} — {tourney.date} at {tourney.time}<br />
                   🏆 Reward: {tourney.reward}
                 </span>
                 <button style={styles.leaveButton} onClick={() => handleLeave(tourney._id)}>
@@ -227,7 +244,7 @@ export default function Dashboard() {
             {matchHistory.map((match, index) => (
               <li key={index} style={styles.tournamentItem}>
                 <span style={styles.tournamentText}>
-                  {match.tournament?.game} — {new Date(match.date).toLocaleDateString()} <br />
+                  {match.tournament?.game} — {new Date(match.date).toLocaleDateString()}<br />
                   🏆 Winner: {match.winner === email ? (
                     <strong style={{ color: '#7fff87' }}>You</strong>
                   ) : (

@@ -7,7 +7,7 @@ const styles = {
     color: '#fff',
     fontFamily: 'Poppins, sans-serif',
     padding: '2rem',
-    maxWidth: '700px',
+    maxWidth: '800px',
     margin: '0 auto',
   },
   title: {
@@ -58,12 +58,15 @@ const styles = {
 };
 
 export default function Profile() {
+  const token = localStorage.getItem('token');
+  const email = localStorage.getItem('email');
+  const userId = localStorage.getItem('user_id');
+
   const [userInfo, setUserInfo] = useState({ xp: 0, email: '' });
   const [winCount, setWinCount] = useState(0);
   const [matchCount, setMatchCount] = useState(0);
-
-  const token = localStorage.getItem('token');
-  const email = localStorage.getItem('email');
+  const [squad, setSquad] = useState(null);
+  const [history, setHistory] = useState([]);
 
   const level = Math.floor(userInfo.xp / 100);
 
@@ -83,6 +86,7 @@ export default function Profile() {
   ];
 
   useEffect(() => {
+    // Fetch /me
     fetch('http://localhost:5000/api/profile/me', {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -91,6 +95,7 @@ export default function Profile() {
         if (data?.email) setUserInfo(data);
       });
 
+    // Fetch match history
     fetch('http://localhost:5000/api/match/history', {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -100,12 +105,33 @@ export default function Profile() {
         const wins = data.filter((match) => match.winner === email);
         setWinCount(wins.length);
       });
+
+    // Fetch squad
+    fetch('http://localhost:5000/api/squads/my', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.message) setSquad(data);
+      });
+
+    // Fetch last 5 XP history logs
+    fetch('http://localhost:5000/api/profile/history', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setHistory(data?.slice(0, 5));
+      });
   }, [token, email]);
+
+  const isLeader = squad?.leader?._id === userId;
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>🧑 Your Player Profile</h1>
 
+      {/* 🎯 Basic Stats */}
       <div style={styles.infoBox}>
         <div style={styles.label}>Email</div>
         <div style={styles.value}>{userInfo.email}</div>
@@ -120,6 +146,7 @@ export default function Profile() {
         <div style={styles.badge}>{getBadge(level)}</div>
       </div>
 
+      {/* 📊 Performance Stats */}
       <div style={styles.infoBox}>
         <div style={styles.label}>Matches Played</div>
         <div style={styles.value}>{matchCount}</div>
@@ -131,11 +158,33 @@ export default function Profile() {
         <div style={styles.value}>
           {matchCount > 0 ? `${Math.round((winCount / matchCount) * 100)}%` : '0%'}
         </div>
+
+        <div style={styles.label}>Kills</div>
+        <div style={styles.value}>{userInfo.totalKills || 0}</div>
+
+        <div style={styles.label}>Placement Points</div>
+        <div style={styles.value}>{userInfo.placementPoints || 0}</div>
       </div>
 
-      {/* Achievements Section */}
+      {/* 🛡 Squad Info Section */}
+      {squad && (
+        <div style={styles.infoBox}>
+          <div style={styles.label}>Squad Name</div>
+          <div style={styles.value}>🛡 {squad.name}</div>
+
+          <div style={styles.label}>Your Role</div>
+          <div style={styles.value}>{isLeader ? '👑 Leader' : '🎖 Member'}</div>
+
+          <div style={styles.label}>Total Members</div>
+          <div style={styles.value}>{squad.members.length}</div>
+        </div>
+      )}
+
+      {/* 🏅 Achievements Section */}
       <div style={styles.infoBox}>
-        <div style={{ ...styles.label, fontSize: '1.05rem', marginBottom: '1rem' }}>🏅 Achievements</div>
+        <div style={{ ...styles.label, fontSize: '1.05rem', marginBottom: '1rem' }}>
+          🏅 Achievements
+        </div>
         <div style={styles.achievementsGrid}>
           {achievements.map((ach, index) => (
             <div key={index} style={styles.achievementCard(ach.unlocked)}>
@@ -144,6 +193,26 @@ export default function Profile() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* 📜 XP History Section */}
+      <div style={styles.infoBox}>
+        <div style={{ ...styles.label, marginBottom: '1rem' }}>📈 Recent XP Matches</div>
+        {history.length === 0 ? (
+          <div>No recent XP activities.</div>
+        ) : (
+          history.map((entry, i) => (
+            <div key={i} style={{ marginBottom: '1rem' }}>
+              <strong>{entry.tournamentName || 'Match'}</strong>
+              <div style={{ fontSize: '0.95rem' }}>
+                🔫 {entry.kills} Kills | 🧩 {entry.placement} Place | 🧠 {entry.earnedXP} XP
+              </div>
+              <div style={{ color: '#aaa', fontSize: '0.8rem' }}>
+                {new Date(entry.timestamp).toLocaleString()}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

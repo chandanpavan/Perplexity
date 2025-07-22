@@ -13,14 +13,14 @@ import Leaderboard from './Pages/Leaderboard';
 import SubmitResult from './Pages/SubmitResult';
 import Profile from './Pages/Profile';
 import Settings from './Pages/Settings';
-import Payments from './Pages/Payments';
-import AddFriend from './Pages/friends/AddFriend';
-import FriendRequests from './Pages/friends/FriendRequests';
-import FriendList from './Pages/friends/FriendList';
-import CreateSquad from './Pages/squads/CreateSquad';
-import SquadRequests from './Pages/squads/SquadRequests';
-import SquadPage from './Pages/squads/SquadPage'
-
+import Payment from './Pages/Payment';
+import AddFriend from './Pages/AddFriend';
+import FriendRequests from './Pages/FriendRequests';
+import FriendList from './Pages/FriendList';
+import CreateSquad from './Pages/CreateSquad';
+import SquadRequests from './Pages/SquadRequests';
+import SquadPage from './Pages/SquadPage'
+import MatchXPHistory from './Pages/MatchXPHistory';
 
 
 function App() {
@@ -44,6 +44,7 @@ function App() {
         <Route path="/squad" element={<SquadPage />} />
         <Route path="/squad/create" element={<CreateSquad />} />
         <Route path="/squad/requests" element={<SquadRequests />} />
+        <Route path="/xp-history" element={<MatchXPHistory />} />
 
 
       </Routes>

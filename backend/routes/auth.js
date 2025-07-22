@@ -33,7 +33,13 @@ router.post(
       // create JWT
       const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-      res.status(201).json({ message: 'User registered', token, email: user.email });
+      res.status(201).json({
+  message: 'User registered',
+  token,
+  email: user.email,
+  userId: user._id // ✅ send it here too
+});
+
     } catch (err) {
       res.status(500).json({ message: 'Server error' });
     }
@@ -65,7 +71,13 @@ router.post(
       // create JWT
       const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-      res.status(200).json({ message: 'Login successful', token, email: user.email });
+      res.status(200).json({
+  message: 'Login successful',
+  token,
+  email: user.email,
+  userId: user._id // ✅ this is what the frontend needs
+});
+
     } catch (err) {
       res.status(500).json({ message: 'Login failed' });
     }

@@ -1,5 +1,3 @@
-// src/pages/Login.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -67,7 +65,6 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  // 🔁 This is the updated function you asked about
   async function handleLogin(e) {
     e.preventDefault();
     setError('');
@@ -86,9 +83,11 @@ export default function Login() {
         return;
       }
 
-      // ✅ Success – store token and navigate
+      // ✅ Store token, email, AND userId
       localStorage.setItem('token', data.token);
       localStorage.setItem('email', data.email);
+      localStorage.setItem('user_id', data.userId); // ✅ added user_id for Socket.IO & chat support
+
       navigate('/dashboard');
     } catch (err) {
       console.error('Login request failed:', err);
