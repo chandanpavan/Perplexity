@@ -7,53 +7,134 @@ export default function AddFriend() {
   const [message, setMessage] = useState('');
 
   const searchUsers = async () => {
-    const res = await fetch(`http://localhost:5000/api/friends/search?query=${query}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const data = await res.json();
-    setResults(data);
+    if (!query.trim()) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/friends/search?query=${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setResults(data);
+      if (data.length === 0) setMessage('No users found.');
+      else setMessage('');
+    } catch (error) {
+      setMessage('Something went wrong.');
+    }
   };
 
   const sendRequest = async (email) => {
-    const res = await fetch('http://localhost:5000/api/friends/request', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ toEmail: email }),
-    });
+    try {
+      const res = await fetch('http://localhost:5000/api/friends/request', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ toEmail: email }),
+      });
 
-    const data = await res.json();
-    setMessage(data.message);
+      const data = await res.json();
+      setMessage(data.message);
+    } catch (err) {
+      setMessage("Couldn't send request.");
+    }
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: 600, margin: '0 auto', color: 'white' }}>
-      <h2>🔎 Search Players</h2>
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Enter email..."
-        style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', marginBottom: '1rem' }}
-      />
-      <button onClick={searchUsers} style={{ padding: '0.5rem 1rem', background: '#9f51ff', color: '#fff', border: 'none', borderRadius: '6px' }}>
-        Search
-      </button>
+    <div
+      style={{
+        padding: '3rem',
+        maxWidth: '900px',
+        margin: '0 auto',
+        color: 'white',
+        fontFamily: 'Segoe UI, sans-serif',
+      }}
+    >
+      <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>🔎 Search Players</h2>
 
-      {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
+      <div
+        style={{
+          display: 'flex',
+          gap: '1rem',
+          marginBottom: '2rem',
+          alignItems: 'center',
+        }}
+      >
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Enter email..."
+          style={{
+            flex: 1,
+            padding: '0.8rem 1rem',
+            fontSize: '1rem',
+            borderRadius: '8px',
+            border: '1px solid #ccc',
+            background: '#1e1e2f',
+            color: '#fff',
+          }}
+        />
+        <button
+          onClick={searchUsers}
+          style={{
+            padding: '0.8rem 1.5rem',
+            background: '#9f51ff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+          }}
+        >
+          Search
+        </button>
+      </div>
 
-      {results.map((user, i) => (
-        <div key={i} style={{ marginTop: '1rem', background: '#2e1c3e', padding: '1rem', borderRadius: '8px' }}>
-          <div>{user.email}</div>
-          <button
-            onClick={() => sendRequest(user.email)}
-            style={{ marginTop: '0.5rem', padding: '0.4rem 1rem', background: '#6a5acd', color: 'white', border: 'none', borderRadius: '6px' }}
+      {message && (
+        <p
+          style={{
+            backgroundColor: '#38244d',
+            padding: '1rem',
+            borderRadius: '8px',
+            fontSize: '1rem',
+            marginBottom: '1.5rem',
+          }}
+        >
+          {message}
+        </p>
+      )}
+
+      <div style={{ display: 'grid', gap: '1.2rem' }}>
+        {results.map((user, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '1rem',
+              background: '#2e1c3e',
+              borderRadius: '10px',
+            }}
           >
-            ➕ Send Friend Request
-          </button>
-        </div>
-      ))}
+            <div style={{ fontSize: '1rem' }}>{user.email}</div>
+            <button
+              onClick={() => sendRequest(user.email)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#6a5acd',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+              }}
+            >
+              ➕ Add Friend
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

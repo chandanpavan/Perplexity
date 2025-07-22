@@ -37,7 +37,7 @@ function App() {
         <Route path="/admin/results" element={<SubmitResult />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/payments" element={<Payments />} />
+        <Route path="/payment" element={<Payment/>} />
         <Route path="/friends/add" element={<AddFriend />} />
         <Route path="/friends/requests" element={<FriendRequests />} />
         <Route path="/friends/list" element={<FriendList />} />
