@@ -43,7 +43,7 @@ export default function CreateSquad() {
   return (
     <div
       style={{
-        maxWidth: 700,
+        maxWidth: 900,
         margin: '2rem auto',
         padding: isMobile ? '1rem' : '2rem',
         backgroundColor: '#1a1230',

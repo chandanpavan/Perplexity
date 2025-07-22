@@ -66,7 +66,7 @@ const styles = {
     borderRadius: '1.4rem',
     padding: '2rem',
     flex: '1 1 300px',
-    maxWidth: '900px',
+    maxWidth: '340px',
     color: '#e9dbfa',
     boxShadow: '0 4px 24px rgba(126,70,214,0.5)',
     border: '1.5px solid #6327ae85',

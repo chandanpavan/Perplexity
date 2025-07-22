@@ -28,7 +28,7 @@ export default function FriendRequests() {
   return (
     <div
       style={{
-        maxWidth: '700px',
+        maxWidth: '900px',
         margin: '3rem auto',
         padding: '2rem',
         background: '#1e0f30',

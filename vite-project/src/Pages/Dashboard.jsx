@@ -44,7 +44,7 @@ const styles = {
     padding: '1.5rem',
     marginBottom: '2rem',
     boxShadow: '0 4px 20px rgba(128, 90, 213, 0.3)',
-    maxWidth: '720px',
+    maxWidth: '900px',
     marginLeft: 'auto',
     marginRight: 'auto',
     transition: 'all 0.3s ease',
