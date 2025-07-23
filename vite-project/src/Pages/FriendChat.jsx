@@ -77,7 +77,7 @@ export default function FriendChat({ friend }) {
   return (
     <div
       style={{
-        maxWidth: '800px',
+        maxWidth: '900px',
         margin: '1rem auto',
         padding: '1rem',
         background: '#2e1c3e',

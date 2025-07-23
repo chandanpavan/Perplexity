@@ -3,7 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Tournament = require('../models/Tournament');
 const User = require('../models/User');
-const MatchXP = require('../models/MatchXP'); // ✅ New model to log XP history
+const MatchXP = require('../models/MatchXp'); // ✅ New model to log XP history
 
 const ADMIN_EMAIL = 'admin@esportspro.com';
 

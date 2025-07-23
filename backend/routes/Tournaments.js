@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const Tournament = require('../models/Tournament');
+const Tournament = require('../models/Tournaments');
 const User = require('../models/User'); // 👉 Import User model
 
 // JOIN a tournament
